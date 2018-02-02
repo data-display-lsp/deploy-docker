@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+
+  influxdb:
+    image: "influxdb:alpine"
+    container_name: influxdb
+    networks:
+      - data-display
+    volumes:
+      - ../influxdb:/var/lib/influxdb
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+
+  grafana:
+    image: "grafana/grafana"
+    container_name: grafana
+    networks:
+      - data-display
+    ports:
+      - "3000:3000"
+    links:
+      - influxdb
+      
+  ingest_data:
+    image: "data-display-lsp/ingest-data:0.1"
+    container_name: ingest_data
+    networks:
+      - data-display
+    ports:
+      - "5000:5000"
+    links:
+      - influxdb
+
+networks:
+  data-display:
